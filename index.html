@@ -1,33 +1,51 @@
 
+    <!DOCTYPE html>
     <html>
     <head>
+        <title>GitHub World Ranking</title>
         <style>
-            body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; text-align: center; }
-            .container { width: 80%; margin: auto; padding-top: 50px; }
-            table { width: 100%; border-collapse: collapse; background: #161b22; border-radius: 8px; overflow: hidden; }
-            th, td { padding: 15px; border-bottom: 1px solid #30363d; text-align: left; }
-            th { background: #21262d; color: #58a6ff; }
-            .pfp { width: 35px; border-radius: 50%; vertical-align: middle; margin-right: 10px; }
-            .score { font-weight: bold; color: #3fb950; }
-            .rank { font-weight: bold; color: #f0883e; }
+            body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+            h1 { color: #58a6ff; font-size: 2.5rem; margin-bottom: 10px; }
+            .leaderboard-table { width: 100%; max-width: 900px; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+            th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #30363d; }
+            th { background: #21262d; color: #8b949e; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+            .avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 12px; vertical-align: middle; border: 2px solid #30363d; }
+            .user-cell { display: flex; align-items: center; font-weight: 600; color: #f0f6fc; }
+            .score-cell { font-weight: bold; color: #3fb950; font-size: 1.1rem; }
+            .rank-1 { background: rgba(212, 175, 55, 0.1); }
+            .rank-2 { background: rgba(192, 192, 192, 0.05); }
+            tr:hover { background: #1c2128; transition: 0.2s; }
         </style>
     </head>
     <body>
-        <div class="container">
-            <h1>🌎 Verified World Leaderboard</h1>
-            <table>
-                <tr><th>Rank</th><th>User</th><th>Stars ⭐</th><th>Followers 👥</th><th>Total Score</th></tr>
+        <h1>🏆 Global GitHub Leaderboard</h1>
+        <p>Real-time ranking based on Stars, Followers, and Repos</p>
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Developer</th>
+                    <th>Stars</th>
+                    <th>Followers</th>
+                    <th>World Score</th>
+                </tr>
+            </thead>
+            <tbody>
                 
-        <tr>
-            <td class="rank">#1</td>
-            <td><img src="https://avatars.githubusercontent.com/u/171407627?v=4" class="pfp"> <strong>Tarunjit45</strong></td>
-            <td>10</td>
-            <td>0</td>
-            <td class="score">1400</td>
+        <tr class="rank-1">
+            <td>1</td>
+            <td class="user-cell">
+                <img src="https://avatars.githubusercontent.com/u/171407627?v=4" class="avatar">
+                <span>Tarunjit45</span>
+            </td>
+            <td>10 ⭐</td>
+            <td>0 👥</td>
+            <td class="score-cell">1410</td>
         </tr>
         
-            </table>
-        </div>
+            </tbody>
+        </table>
+        <p style="margin-top: 20px; color: #8b949e;">Clone the repo to join the ranking!</p>
     </body>
     </html>
     
