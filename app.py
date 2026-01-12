@@ -2,21 +2,19 @@ import requests
 import os
 import json
 from dotenv import load_dotenv
+import urllib.parse
 
 # --- CONFIGURATION ---
 DB_FILE = "leaderboard.json"
 ENV_FILE = ".env"
 
-# Load existing token
 load_dotenv(ENV_FILE)
 TOKEN = os.getenv("GITHUB_TOKEN")
 
 def get_verified_user_data(token):
-    """Fetches real-time verified data from GitHub."""
     headers = {"Authorization": f"token {token}"}
     print("\n🔐 Authenticating with GitHub...")
     
-    # Verify Identity
     user_res = requests.get("https://api.github.com/user", headers=headers)
     if user_res.status_code != 200:
         return None
@@ -24,27 +22,22 @@ def get_verified_user_data(token):
     u = user_res.json()
     username = u['login']
     
-    # Fetch Stars (Scans first 100 repos)
     repos_res = requests.get(f"https://api.github.com/users/{username}/repos?per_page=100", headers=headers)
     stars = sum(repo['stargazers_count'] for repo in repos_res.json()) if repos_res.status_code == 200 else 0
     
-    # Calculate Score: Stars (100pts), Followers (50pts), Repos (10pts)
     followers = u.get('followers', 0)
     repos_count = u.get('public_repos', 0)
     score = (stars * 100) + (followers * 50) + (repos_count * 10)
     
     return {
         "username": username,
-        "name": u.get('name') or username,
         "avatar": u['avatar_url'],
         "stars": stars,
         "followers": followers,
-        "repos": repos_count,
         "score": score
     }
 
 def update_leaderboard_files(data):
-    """Updates JSON database and generates a professional HTML page."""
     # 1. Update JSON
     users = []
     if os.path.exists(DB_FILE):
@@ -52,7 +45,6 @@ def update_leaderboard_files(data):
             try: users = json.load(f)
             except: users = []
     
-    # Update existing or add new
     users = [u for u in users if u['username'].lower() != data['username'].lower()]
     users.append(data)
     users.sort(key=lambda x: x['score'], reverse=True)
@@ -60,21 +52,27 @@ def update_leaderboard_files(data):
     with open(DB_FILE, "w") as f:
         json.dump(users, f, indent=4)
 
-    # 2. Generate Professional HTML
+    # 2. Generate HTML with Search and Share
+    total_users = len(users)
     table_rows = ""
     for i, u in enumerate(users):
         rank = i + 1
-        rank_class = "rank-1" if rank == 1 else "rank-2" if rank == 2 else "rank-3" if rank == 3 else ""
+        # Create Share URL
+        tweet_text = f"I am ranked #{rank} on the GitHub World Leaderboard with {u['score']} points! Check your rank here: https://Tarunjit45.github.io/github-ranker/"
+        share_url = f"https://twitter.com/intent/tweet?text={urllib.parse.quote(tweet_text)}"
+        
         table_rows += f"""
-        <tr class="{rank_class}">
+        <tr class="user-row">
             <td>{rank}</td>
             <td class="user-cell">
                 <img src="{u['avatar']}" class="avatar">
-                <span>{u['username']}</span>
+                <span class="username">{u['username']}</span>
             </td>
             <td>{u['stars']} ⭐</td>
-            <td>{u['followers']} 👥</td>
             <td class="score-cell">{u['score']}</td>
+            <td>
+                <a href="{share_url}" target="_blank" class="tweet-btn">🐦 Tweet</a>
+            </td>
         </tr>
         """
 
@@ -84,37 +82,50 @@ def update_leaderboard_files(data):
     <head>
         <title>GitHub World Ranking</title>
         <style>
-            body {{ background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }}
-            h1 {{ color: #58a6ff; font-size: 2.5rem; margin-bottom: 10px; }}
-            .leaderboard-table {{ width: 100%; max-width: 900px; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
-            th, td {{ padding: 15px 20px; text-align: left; border-bottom: 1px solid #30363d; }}
-            th {{ background: #21262d; color: #8b949e; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }}
-            .avatar {{ width: 35px; height: 35px; border-radius: 50%; margin-right: 12px; vertical-align: middle; border: 2px solid #30363d; }}
-            .user-cell {{ display: flex; align-items: center; font-weight: 600; color: #f0f6fc; }}
-            .score-cell {{ font-weight: bold; color: #3fb950; font-size: 1.1rem; }}
-            .rank-1 {{ background: rgba(212, 175, 55, 0.1); }}
-            .rank-2 {{ background: rgba(192, 192, 192, 0.05); }}
-            tr:hover {{ background: #1c2128; transition: 0.2s; }}
+            body {{ background: #0d1117; color: #c9d1d9; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }}
+            h1 {{ color: #58a6ff; margin-bottom: 5px; }}
+            .stats-badge {{ background: #238636; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; }}
+            #searchBar {{ padding: 12px; width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid #30363d; background: #161b22; color: white; margin-bottom: 20px; }}
+            .leaderboard-table {{ width: 100%; max-width: 900px; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; }}
+            th, td {{ padding: 15px; text-align: left; border-bottom: 1px solid #30363d; }}
+            th {{ background: #21262d; color: #8b949e; }}
+            .avatar {{ width: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }}
+            .score-cell {{ font-weight: bold; color: #3fb950; }}
+            .tweet-btn {{ background: #1d9bf0; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; }}
+            .tweet-btn:hover {{ background: #1a8cd8; }}
         </style>
     </head>
     <body>
         <h1>🏆 Global GitHub Leaderboard</h1>
-        <p>Real-time ranking based on Stars, Followers, and Repos</p>
-        <table class="leaderboard-table">
+        <div class="stats-badge">Total Ranked: {total_users} Developers</div>
+        
+        <input type="text" id="searchBar" onkeyup="searchTable()" placeholder="🔍 Search for a username...">
+
+        <table class="leaderboard-table" id="rankTable">
             <thead>
                 <tr>
                     <th>Rank</th>
                     <th>Developer</th>
                     <th>Stars</th>
-                    <th>Followers</th>
                     <th>World Score</th>
+                    <th>Share</th>
                 </tr>
             </thead>
             <tbody>
                 {table_rows}
             </tbody>
         </table>
-        <p style="margin-top: 20px; color: #8b949e;">Clone the repo to join the ranking!</p>
+
+        <script>
+        function searchTable() {{
+            let input = document.getElementById("searchBar").value.toLowerCase();
+            let rows = document.getElementsByClassName("user-row");
+            for (let i = 0; i < rows.length; i++) {{
+                let username = rows[i].getElementsByClassName("username")[0].innerText.toLowerCase();
+                rows[i].style.display = username.includes(input) ? "" : "none";
+            }}
+        }}
+        </script>
     </body>
     </html>
     """
@@ -125,28 +136,13 @@ def update_leaderboard_files(data):
 
 if __name__ == "__main__":
     if not TOKEN:
-        print("\n" + "="*50)
-        print("🚀 GITHUB WORLD RANKER: SETUP GUIDE")
-        print("="*50)
-        print("1. Visit: https://github.com/settings/tokens")
-        print("2. Generate a token (classic) with 'read:user' and 'repo' scopes.")
-        print("-" * 50)
-        
+        print("\n🚀 GITHUB WORLD RANKER SETUP")
         TOKEN = input("🔑 Paste your GitHub Access Token: ").strip()
         if TOKEN:
-            with open(ENV_FILE, "w") as f:
-                f.write(f"GITHUB_TOKEN={TOKEN}")
-        else:
-            print("❌ No token provided. Exiting."); exit()
+            with open(ENV_FILE, "w") as f: f.write(f"GITHUB_TOKEN={TOKEN}")
+        else: exit()
 
     stats = get_verified_user_data(TOKEN)
     if stats:
-        all_users = update_leaderboard_files(stats)
-        my_rank = next(i for i, u in enumerate(all_users) if u['username'] == stats['username']) + 1
-        
-        print(f"\n✅ Verified as: {stats['username']}")
-        print(f"📈 Your World Rank: #{my_rank}")
-        print(f"🔥 Total Score: {stats['score']} pts")
-        print(f"\n🏆 Leaderboard updated! Run 'git push' to update the website.")
-    else:
-        print("\n❌ Auth failed. Delete .env and try again.")
+        update_leaderboard_files(stats)
+        print(f"✅ Success! Run 'git push' to update the live site.")

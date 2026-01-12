@@ -4,48 +4,63 @@
     <head>
         <title>GitHub World Ranking</title>
         <style>
-            body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
-            h1 { color: #58a6ff; font-size: 2.5rem; margin-bottom: 10px; }
-            .leaderboard-table { width: 100%; max-width: 900px; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-            th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid #30363d; }
-            th { background: #21262d; color: #8b949e; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-            .avatar { width: 35px; height: 35px; border-radius: 50%; margin-right: 12px; vertical-align: middle; border: 2px solid #30363d; }
-            .user-cell { display: flex; align-items: center; font-weight: 600; color: #f0f6fc; }
-            .score-cell { font-weight: bold; color: #3fb950; font-size: 1.1rem; }
-            .rank-1 { background: rgba(212, 175, 55, 0.1); }
-            .rank-2 { background: rgba(192, 192, 192, 0.05); }
-            tr:hover { background: #1c2128; transition: 0.2s; }
+            body { background: #0d1117; color: #c9d1d9; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
+            h1 { color: #58a6ff; margin-bottom: 5px; }
+            .stats-badge { background: #238636; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 20px; }
+            #searchBar { padding: 12px; width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid #30363d; background: #161b22; color: white; margin-bottom: 20px; }
+            .leaderboard-table { width: 100%; max-width: 900px; border-collapse: collapse; background: #161b22; border-radius: 12px; overflow: hidden; }
+            th, td { padding: 15px; text-align: left; border-bottom: 1px solid #30363d; }
+            th { background: #21262d; color: #8b949e; }
+            .avatar { width: 30px; border-radius: 50%; margin-right: 10px; vertical-align: middle; }
+            .score-cell { font-weight: bold; color: #3fb950; }
+            .tweet-btn { background: #1d9bf0; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 0.8rem; }
+            .tweet-btn:hover { background: #1a8cd8; }
         </style>
     </head>
     <body>
         <h1>🏆 Global GitHub Leaderboard</h1>
-        <p>Real-time ranking based on Stars, Followers, and Repos</p>
-        <table class="leaderboard-table">
+        <div class="stats-badge">Total Ranked: 1 Developers</div>
+        
+        <input type="text" id="searchBar" onkeyup="searchTable()" placeholder="🔍 Search for a username...">
+
+        <table class="leaderboard-table" id="rankTable">
             <thead>
                 <tr>
                     <th>Rank</th>
                     <th>Developer</th>
                     <th>Stars</th>
-                    <th>Followers</th>
                     <th>World Score</th>
+                    <th>Share</th>
                 </tr>
             </thead>
             <tbody>
                 
-        <tr class="rank-1">
+        <tr class="user-row">
             <td>1</td>
             <td class="user-cell">
                 <img src="https://avatars.githubusercontent.com/u/171407627?v=4" class="avatar">
-                <span>Tarunjit45</span>
+                <span class="username">Tarunjit45</span>
             </td>
             <td>10 ⭐</td>
-            <td>0 👥</td>
             <td class="score-cell">1410</td>
+            <td>
+                <a href="https://twitter.com/intent/tweet?text=I%20am%20ranked%20%231%20on%20the%20GitHub%20World%20Leaderboard%20with%201410%20points%21%20Check%20your%20rank%20here%3A%20https%3A//Tarunjit45.github.io/github-ranker/" target="_blank" class="tweet-btn">🐦 Tweet</a>
+            </td>
         </tr>
         
             </tbody>
         </table>
-        <p style="margin-top: 20px; color: #8b949e;">Clone the repo to join the ranking!</p>
+
+        <script>
+        function searchTable() {
+            let input = document.getElementById("searchBar").value.toLowerCase();
+            let rows = document.getElementsByClassName("user-row");
+            for (let i = 0; i < rows.length; i++) {
+                let username = rows[i].getElementsByClassName("username")[0].innerText.toLowerCase();
+                rows[i].style.display = username.includes(input) ? "" : "none";
+            }
+        }
+        </script>
     </body>
     </html>
     
