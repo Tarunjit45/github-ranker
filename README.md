@@ -1,70 +1,85 @@
-# 🚀 github-ranker
+# 🏆 GitHub Ranker — Real-Time Developer Impact Leaderboard
 
-![Language](https://img.shields.io/badge/Language-Python-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Production-Active-success?style=for-the-badge)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![GitHub API](https://img.shields.io/badge/API-GitHub%20REST%20v3-181717?style=for-the-badge&logo=github&logoColor=white)](https://docs.github.com/en/rest)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-## 📌 Overview
+**GitHub Ranker** is a real-time developer leaderboard engine that calculates and ranks engineers based on verifiable open-source impact across GitHub.
 
-A real-time, verified leaderboard platform that ranks developers based on their actual GitHub impact.Join the global ranking and see where you stand against the world!  🌐 Live Leaderboard
+---
 
-## ✨ Key Features & Architecture
+## 📌 Scoring Methodology
 
-- **High-Performance Codebase:** Built using `Python` and modern engineering principles.
-- **Modular & Scalable Design:** Structured directory tree for seamless development and deployment.
+Unlike superficial metrics that only count vanity metrics or automated bot commits, GitHub Ranker balances multiple dimensions:
 
-## 🛠️ Tech Stack & Dependencies
+```
++--------------------------------------------------------------+
+|                     GitHub REST API v3                       |
++--------------------------------------------------------------+
+                               |
+                               v
++--------------------------------------------------------------+
+|                   Ingestion & Verification                   |
+|       Total Stars Earned | Public Repositories | PRs         |
+|         Followers Count  | Verified Commits    | Issues      |
++--------------------------------------------------------------+
+                               |
+                               v
++--------------------------------------------------------------+
+|                 Weighted Composite Scoring                   |
+| Score = (Stars * 10) + (Followers * 5) + (Repos * 2) + Commits|
++--------------------------------------------------------------+
+                               |
+                               v
++--------------------------------------------------------------+
+|                 Cached Store: leaderboard.json               |
+|            Rendered via responsive `index.html`              |
++--------------------------------------------------------------+
+```
 
-- **Core Language:** `Python`
-- **Libraries & Tools:** Python
-- **Deployment Infrastructure:** Vercel Edge / Cloud Services
+---
 
-## 📁 Architecture & File Layout
+## 📁 Repository Structure
 
 ```text
 github-ranker/
-├── .github
-├── .github/ISSUE_TEMPLATE
-├── .github/ISSUE_TEMPLATE/bug_report.md
-├── .github/ISSUE_TEMPLATE/feature_request.md
-├── .github/PULL_REQUEST_TEMPLATE.md
-├── .github/workflows
-├── .github/workflows/ci.yml
-├── .gitignore
-├── CODE_OF_CONDUCT.md
-├── CONTRIBUTING.md
-├── LICENSE
-├── README.md
-├── app.py
-├── index.html
-├── leaderboard.json
+├── app.py              # Ingestion engine, GitHub API aggregator & ranking calculator
+├── index.html          # Clean, responsive leaderboard web dashboard
+├── leaderboard.json    # Cached ranking database and verified player profiles
+├── LICENSE             # MIT License
+└── README.md
 ```
 
-## 🚀 Quickstart & Installation
+---
 
-### Prerequisites
-- Python 3.9+
-- pip package manager
+## 🚀 Getting Started
 
-### Setup Instructions
+### 1. Installation
+Clone the repository:
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Tarunjit45/github-ranker.git
-   cd github-ranker
-   ```
+```bash
+git clone https://github.com/Tarunjit45/github-ranker.git
+cd github-ranker
 
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+pip install requests python-dotenv
+```
 
-3. **Execute application:**
-   ```bash
-   python main.py
-   ```
+### 2. Configure GitHub Token
+Set up your personal access token in `.env` to prevent rate limits:
 
-## 📜 Author & License
+```env
+GITHUB_TOKEN=ghp_your_github_token_here
+```
 
-Architected & Developed by **[Tarunjit Biswas](https://github.com/Tarunjit45)**.  
-Distributed under the **MIT License**.
+### 3. Run Ranking Update
+```bash
+python app.py
+```
+
+### 4. View Leaderboard
+Open `index.html` in your browser to view the real-time ranked roster.
+
+---
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).
